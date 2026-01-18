@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+supabase
+google-generativeai
+python-jose[cryptography]
+passlib[bcrypt]
+python-dotenv
+python-multipart
+pydantic[email]
