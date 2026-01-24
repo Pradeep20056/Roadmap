@@ -53,4 +53,29 @@ class SupabaseService:
         response = self.client.table("roadmaps").select("*").eq("user_id", user_id).order("created_at", desc=True).execute()
         return response.data
 
+    def update_roadmap_progress(self, roadmap_id: str, week_number: int, is_completed: bool):
+        # 1. Fetch existing roadmap
+        response = self.client.table("roadmaps").select("*").eq("id", roadmap_id).execute()
+        if not response.data:
+            return None
+        
+        roadmap_data = response.data[0]
+        roadmap_json = roadmap_data["roadmap_json"]
+        
+        # 2. Update the specific week
+        weeks = roadmap_json.get("weeks", [])
+        updated = False
+        for week in weeks:
+            if week.get("week") == week_number:
+                week["isCompleted"] = is_completed
+                updated = True
+                break
+        
+        if not updated:
+            return None # Week not found
+            
+        # 3. Save back to DB
+        update_response = self.client.table("roadmaps").update({"roadmap_json": roadmap_json}).eq("id", roadmap_id).execute()
+        return update_response.data[0] if update_response.data else None
+
 supabase_service = SupabaseService()

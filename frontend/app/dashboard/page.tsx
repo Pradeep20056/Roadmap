@@ -52,7 +52,7 @@ export default function DashboardPage() {
                     duration_weeks: parseInt(duration),
                 }),
             });
-            setRoadmap(data.roadmap_json);
+            setRoadmap({ ...data.roadmap_json, id: data.id });
             loadHistory(); // Refresh history
         } catch (err: any) {
             alert("Error generating roadmap: " + err.message);
@@ -65,6 +65,30 @@ export default function DashboardPage() {
         localStorage.removeItem("token");
         router.push("/");
     };
+
+    const handleToggleProgress = async (week: number, isCompleted: boolean) => {
+        if (!roadmap || !roadmap.id) return;
+
+        // Optimistic update
+        const updatedWeeks = roadmap.weeks.map((w: any) =>
+            w.week === week ? { ...w, isCompleted } : w
+        );
+        const updatedRoadmap = { ...roadmap, weeks: updatedWeeks };
+        setRoadmap(updatedRoadmap);
+
+        try {
+            await fetchAPI(`/roadmap/${roadmap.id}/progress`, {
+                method: "PATCH",
+                body: JSON.stringify({ week_number: week, is_completed: isCompleted }),
+            });
+            // Update history list as well to reflect progress if we show it there, or just silence.
+            loadHistory();
+        } catch (error) {
+            console.error("Failed to update progress", error);
+            // Optionally revert here
+        }
+    };
+
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-zinc-950 flex flex-col">
@@ -96,7 +120,7 @@ export default function DashboardPage() {
                             {history.map((item) => (
                                 <div
                                     key={item.id}
-                                    onClick={() => setRoadmap(item.roadmap_json)}
+                                    onClick={() => setRoadmap({ ...item.roadmap_json, id: item.id })}
                                     className="p-3 rounded-lg border bg-card hover:bg-accent cursor-pointer transition-colors text-sm"
                                 >
                                     <div className="font-medium truncate">{item.goal}</div>
@@ -159,7 +183,7 @@ export default function DashboardPage() {
                     </section>
 
                     {/* Roadmap Display */}
-                    {roadmap && <RoadmapDisplay roadmap={roadmap} />}
+                    {roadmap && <RoadmapDisplay roadmap={roadmap} onToggleProgress={handleToggleProgress} />}
 
                 </main>
             </div>

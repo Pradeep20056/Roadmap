@@ -15,6 +15,7 @@ interface Week {
     topics: string[];
     resources: string[] | { name: string; url: string }[];
     mini_project: string;
+    isCompleted?: boolean;
 }
 
 interface RoadmapJSON {
@@ -25,9 +26,10 @@ interface RoadmapJSON {
 
 interface RoadmapDisplayProps {
     roadmap: RoadmapJSON;
+    onToggleProgress?: (week: number, isCompleted: boolean) => void;
 }
 
-export function RoadmapDisplay({ roadmap }: RoadmapDisplayProps) {
+export function RoadmapDisplay({ roadmap, onToggleProgress }: RoadmapDisplayProps) {
     if (!roadmap || !roadmap.weeks) return null;
 
     return (
@@ -36,18 +38,43 @@ export function RoadmapDisplay({ roadmap }: RoadmapDisplayProps) {
                 <h2 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
                     {roadmap.title || "Your Learning Roadmap"}
                 </h2>
-                <p className="text-muted-foreground mt-2">{roadmap.total_weeks} Weeks to Mastery</p>
+                <div className="flex justify-center items-center gap-2 text-muted-foreground mt-2">
+                    <span>{roadmap.total_weeks} Weeks to Mastery</span>
+                    <span>•</span>
+                    <div className="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
+                        <div
+                            className="h-full bg-blue-500 transition-all duration-500"
+                            style={{ width: `${(roadmap.weeks.filter(w => w.isCompleted).length / roadmap.total_weeks) * 100}%` }}
+                        />
+                    </div>
+                    <span className="text-xs">{Math.round((roadmap.weeks.filter(w => w.isCompleted).length / roadmap.total_weeks) * 100)}%</span>
+                </div>
             </div>
 
             <div className="space-y-6">
                 {roadmap.weeks.map((week, idx) => (
-                    <Card key={idx} className="border-l-4 border-l-blue-500 overflow-hidden hover:shadow-md transition-shadow">
+                    <Card key={idx} className={`border-l-4 transition-all duration-300 ${week.isCompleted ? 'border-l-green-500 bg-green-50/50 dark:bg-green-950/20' : 'border-l-blue-500 hover:shadow-md'}`}>
                         <CardHeader className="bg-muted/30 pb-4">
                             <div className="flex justify-between items-start">
                                 <div>
-                                    <span className="text-sm font-bold text-blue-500 uppercase tracking-widest">Week {week.week}</span>
+                                    <div className="flex items-center gap-3">
+                                        <span className={`text-sm font-bold uppercase tracking-widest ${week.isCompleted ? 'text-green-600' : 'text-blue-500'}`}>Week {week.week}</span>
+                                        {week.isCompleted && <span className="text-xs px-2 py-0.5 rounded-full bg-green-100 text-green-700 font-medium">Completed</span>}
+                                    </div>
                                     <CardTitle className="text-xl mt-1">{week.title}</CardTitle>
                                 </div>
+                                {onToggleProgress && (
+                                    <div className="flex items-center gap-2">
+                                        <label htmlFor={`week-${week.week}`} className="text-sm text-muted-foreground cursor-pointer select-none">Mark Complete</label>
+                                        <input
+                                            type="checkbox"
+                                            id={`week-${week.week}`}
+                                            checked={!!week.isCompleted}
+                                            onChange={(e) => onToggleProgress(week.week, e.target.checked)}
+                                            className="w-5 h-5 accent-blue-600 rounded cursor-pointer"
+                                        />
+                                    </div>
+                                )}
                             </div>
                         </CardHeader>
                         <CardContent className="pt-6 grid md:grid-cols-2 gap-6">

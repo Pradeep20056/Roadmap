@@ -6,6 +6,10 @@ class RoadmapRequest(BaseModel):
     goal: str
     duration_weeks: int
 
+class RoadmapProgressRequest(BaseModel):
+    week_number: int
+    is_completed: bool
+
 class RoadmapResponse(BaseModel):
     id: Optional[str] = None
     user_id: Optional[str] = None
@@ -22,6 +26,7 @@ class WeeklyPlan(BaseModel):
     topics: List[str]
     resources: List[str]
     mini_project: str
+    isCompleted: bool = False
 
 class RoadmapStructure(BaseModel):
     title: str
