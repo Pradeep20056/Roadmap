@@ -69,3 +69,23 @@ def update_progress(
         raise he
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/{roadmap_id}", response_model=RoadmapResponse)
+def get_roadmap(
+    roadmap_id: str,
+    current_user: dict = Depends(get_current_user)
+):
+    try:
+        roadmap = supabase_service.get_roadmap_by_id(roadmap_id)
+        if not roadmap:
+            raise HTTPException(status_code=404, detail="Roadmap not found")
+        
+        # Verify ownership
+        if roadmap['user_id'] != current_user['id']:
+             raise HTTPException(status_code=403, detail="Not authorized to view this roadmap")
+             
+        return roadmap
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

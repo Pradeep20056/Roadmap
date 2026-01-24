@@ -53,6 +53,10 @@ class SupabaseService:
         response = self.client.table("roadmaps").select("*").eq("user_id", user_id).order("created_at", desc=True).execute()
         return response.data
 
+    def get_roadmap_by_id(self, roadmap_id: str):
+        response = self.client.table("roadmaps").select("*").eq("id", roadmap_id).execute()
+        return response.data[0] if response.data else None
+
     def update_roadmap_progress(self, roadmap_id: str, week_number: int, is_completed: bool):
         # 1. Fetch existing roadmap
         response = self.client.table("roadmaps").select("*").eq("id", roadmap_id).execute()

@@ -7,6 +7,9 @@ export default function Home() {
       <header className="px-6 py-4 flex items-center justify-between border-b">
         <div className="font-bold text-xl">AI Roadmap Gen</div>
         <div className="flex gap-4">
+          <Link href="/roadmap/demo">
+            <Button variant="ghost">Roadmap</Button>
+          </Link>
           <Link href="/login">
             <Button variant="ghost">Login</Button>
           </Link>

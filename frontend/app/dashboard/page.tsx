@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -99,6 +100,11 @@ export default function DashboardPage() {
                     AI Roadmap Gen
                 </h1>
                 <div className="flex items-center gap-4">
+                    {roadmap && roadmap.id && (
+                        <Link href={`/roadmap/${roadmap.id}`}>
+                            <Button variant="ghost" size="sm">Roadmap</Button>
+                        </Link>
+                    )}
                     <Button variant="ghost" size="sm" onClick={() => setShowHistory(!showHistory)}>
                         <History className="w-4 h-4 mr-2" />
                         {showHistory ? "Hide History" : "History"}

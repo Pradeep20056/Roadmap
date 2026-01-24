@@ -19,6 +19,7 @@ interface Week {
 }
 
 interface RoadmapJSON {
+    id?: string; // We need ID for linking
     title: string;
     total_weeks: number;
     weeks: Week[];
@@ -38,6 +39,14 @@ export function RoadmapDisplay({ roadmap, onToggleProgress }: RoadmapDisplayProp
                 <h2 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
                     {roadmap.title || "Your Learning Roadmap"}
                 </h2>
+                {roadmap.id && (
+                    <div className="flex justify-center mt-4">
+                        <a href={`/roadmap/${roadmap.id}`} className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 gap-2">
+                            <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+                            Visualize Journey
+                        </a>
+                    </div>
+                )}
                 <div className="flex justify-center items-center gap-2 text-muted-foreground mt-2">
                     <span>{roadmap.total_weeks} Weeks to Mastery</span>
                     <span>•</span>
