@@ -1,13 +1,12 @@
-from google import genai
-from google.genai import types
+import google.generativeai as genai
 from app.core.config import settings
 import json
 import re
 
 class GeminiService:
     def __init__(self):
-        # NEW SDK: Create a client (no configure())
-        self.client = genai.Client(api_key=settings.GEMINI_API_KEY)
+        genai.configure(api_key=settings.GEMINI_API_KEY)
+        self.model = genai.GenerativeModel("gemini-2.5-flash")
 
     async def generate_roadmap(self, goal: str, duration_weeks: int) -> dict:
         prompt = f"""
@@ -45,20 +44,15 @@ JSON FORMAT:
 """
 
         try:
-            response = self.client.models.generate_content(
-                model="gemini-2.5-flash",
-                contents=prompt,
-                config=types.GenerateContentConfig(
-                    response_mime_type="application/json"
-                )
-            )
+            response = self.model.generate_content(prompt)
 
             text = response.text.strip()
-            # Clean markdown code blocks if present
+
+            # Remove markdown if Gemini adds it
             text = re.sub(r'^```json\s*', '', text, flags=re.MULTILINE)
             text = re.sub(r'^```\s*', '', text, flags=re.MULTILINE)
             text = text.strip()
-            
+
             return json.loads(text)
 
         except Exception as e:
@@ -68,5 +62,6 @@ JSON FORMAT:
                 "total_weeks": 0,
                 "weeks": []
             }
+
 
 gemini_service = GeminiService()
