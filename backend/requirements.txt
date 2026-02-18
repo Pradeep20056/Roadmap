@@ -4,7 +4,7 @@ gunicorn
 supabase
 google-generativeai
 python-jose[cryptography]
-passlib[bcrypt]
+bcrypt
 python-dotenv
 python-multipart
 pydantic[email]
