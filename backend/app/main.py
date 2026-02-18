@@ -19,8 +19,8 @@ app.add_middleware(
 )
 
 # Include Routers
-app.include_router(auth.router, prefix=f"{settings.API_V1_STR}/auth", tags=["auth"])
-app.include_router(roadmap.router, prefix=f"{settings.API_V1_STR}/roadmap", tags=["roadmap"])
+app.include_router(auth.router, prefix=f"/auth", tags=["auth"])
+app.include_router(roadmap.router, prefix=f"/roadmap", tags=["roadmap"])
 
 @app.get("/")
 def root():
