@@ -8,15 +8,11 @@ app = FastAPI(
     openapi_url=f"{settings.API_V1_STR}/openapi.json"
 )
 
-# CORS defaults - Allow all for development mainly, strict for prod
-origins = [
-    "http://localhost:3000",
-    "http://localhost:8000",
-]
+# CORS defaults - Allow all for development mainly, strict for pro
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["https://roadmap-two-sigma.vercel.app"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
